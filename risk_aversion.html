@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; font: 14px system-ui, -apple-system, sans-serif; background: #FAFAF8; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<title>What Is Your Risk Aversion?</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ink:      #10161F;
+    --ink-soft: #4A5462;
+    --blue:     #002D72;
+    --blue-lo:  #E7ECF4;
+    --maroon:   #8B0000;
+    --maroon-lo:#F6EAEA;
+    --paper:    #FAFAF8;
+    --card:     #FFFFFF;
+    --rule:     #D8DCE3;
+    --band:     #EFF2F7;
+    --display: "Spectral", Georgia, "Times New Roman", serif;
+    --ui: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:      #E8EBF0;
+      --ink-soft: #9AA5B4;
+      --blue:     #8FB3E8;
+      --blue-lo:  #16233A;
+      --maroon:   #E38A8A;
+      --maroon-lo:#2E1A1A;
+      --paper:    #0D1117;
+      --card:     #141A23;
+      --rule:     #2A323E;
+      --band:     #1A222E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink:      #E8EBF0;
+    --ink-soft: #9AA5B4;
+    --blue:     #8FB3E8;
+    --blue-lo:  #16233A;
+    --maroon:   #E38A8A;
+    --maroon-lo:#2E1A1A;
+    --paper:    #0D1117;
+    --card:     #141A23;
+    --rule:     #2A323E;
+    --band:     #1A222E;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--ui);
+    font-size: 16px;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0 20px 72px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  /* ---------- masthead ---------- */
+  header { padding: 48px 0 26px; border-bottom: 2px solid var(--blue); }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--blue); margin: 0 0 14px;
+  }
+  h1 {
+    font-family: var(--display); font-weight: 600;
+    font-size: clamp(31px, 6vw, 44px); line-height: 1.08;
+    letter-spacing: -0.015em; margin: 0 0 16px; text-wrap: balance;
+  }
+  .standfirst {
+    font-family: var(--display); font-size: 17.5px; line-height: 1.5;
+    color: var(--ink-soft); margin: 0; max-width: 60ch;
+  }
+  .standfirst em { color: var(--ink); font-style: italic; }
+  .nosubmit {
+    font-family: var(--ui); font-size: 14px; line-height: 1.6;
+    color: var(--ink-soft); margin: 14px 0 0; padding: 10px 14px;
+    background: var(--band); border-left: 3px solid var(--maroon);
+  }
+  .nosubmit strong { color: var(--maroon); }
+  .nosubmit em { font-style: italic; color: var(--ink); }
+
+  /* ---------- the instrument ---------- */
+  .instrument {
+    background: var(--card); border: 1px solid var(--rule);
+    border-top: 3px solid var(--maroon);
+    padding: 24px 22px 18px; margin: 30px 0 12px;
+  }
+  .inst-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 6px;
+  }
+  .inst-title {
+    font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .readout { font-family: var(--mono); font-size: 14px; color: var(--ink-soft); }
+  .readout b {
+    font-weight: 500; font-size: 26px; color: var(--maroon);
+    font-variant-numeric: tabular-nums;
+  }
+  .ruler-scroll { overflow-x: auto; }
+  svg.ruler { display: block; width: 100%; min-width: 520px; height: auto; }
+  .rl-axis  { stroke: var(--ink); stroke-width: 1.4; }
+  .rl-tick  { stroke: var(--ink-soft); stroke-width: 1; }
+  .rl-txt   { fill: var(--ink-soft); font-family: var(--mono); font-size: 11px; }
+  .rl-txt-b { fill: var(--ink); font-family: var(--mono); font-size: 11.5px; font-weight: 500; }
+  .rl-lab   { fill: var(--blue); font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; }
+  .rl-typ   { fill: var(--blue-lo); }
+  .rl-mark  { stroke: var(--blue); stroke-width: 1.2; stroke-dasharray: 3 3; }
+  .rl-you   { fill: var(--maroon); }
+  .rl-youl  { stroke: var(--maroon); stroke-width: 2; }
+  .rl-yout  { fill: var(--maroon); font-family: var(--mono); font-size: 12px; font-weight: 500; }
+  .hint {
+    font-size: 13.5px; color: var(--ink-soft); margin: 10px 0 0;
+    font-style: italic; font-family: var(--display);
+  }
+
+  /* ---------- bands ---------- */
+  .bands { margin: 26px 0 8px; border-top: 1px solid var(--rule); }
+  .bandrow {
+    display: grid; grid-template-columns: 92px 1fr 88px;
+    gap: 14px; align-items: start;
+    padding: 13px 12px; border-bottom: 1px solid var(--rule);
+  }
+  .bandrow.on { background: var(--maroon-lo); }
+  .bandrow .a {
+    font-family: var(--mono); font-size: 14px; font-weight: 500;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  .bandrow.on .a { color: var(--maroon); }
+  .bandrow .nm { font-weight: 600; font-size: 15px; }
+  .bandrow .ds { font-size: 13.5px; color: var(--ink-soft); }
+  .bandrow .w {
+    font-family: var(--mono); font-size: 14px; text-align: right;
+    color: var(--ink-soft); font-variant-numeric: tabular-nums;
+  }
+  .bandhdr {
+    display: grid; grid-template-columns: 92px 1fr 88px; gap: 14px;
+    padding: 0 12px 8px; font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .bandhdr span:last-child { text-align: right; }
+
+  /* ---------- questions ---------- */
+  h2 {
+    font-family: var(--display); font-weight: 600; font-size: 24px;
+    margin: 46px 0 6px; letter-spacing: -0.01em;
+  }
+  .sect-note { font-size: 14.5px; color: var(--ink-soft); margin: 0 0 22px; }
+  fieldset {
+    border: 0; border-top: 1px solid var(--rule);
+    margin: 0; padding: 22px 0 4px;
+  }
+  legend { padding: 0; }
+  .qtop { display: flex; gap: 12px; align-items: baseline; margin-bottom: 4px; }
+  .qn {
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    color: var(--blue); padding-top: 3px; flex: none;
+  }
+  .qt { font-weight: 600; font-size: 16.5px; line-height: 1.4; }
+  .qsub {
+    font-size: 14px; color: var(--ink-soft); margin: 2px 0 12px 30px;
+    font-family: var(--display); font-style: italic;
+  }
+  .tag {
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 2px 6px; border: 1px solid var(--rule);
+    color: var(--ink-soft); flex: none; align-self: center;
+  }
+  .tag.exact { color: var(--blue); border-color: var(--blue); }
+  .opts { display: flex; flex-direction: column; gap: 1px; margin-left: 30px; }
+  .opt {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 8px 11px; cursor: pointer; background: transparent;
+    border-left: 3px solid transparent; font-size: 15px;
+  }
+  .opt:hover { background: var(--band); }
+  .opt input { margin: 0; accent-color: var(--maroon); flex: none; position: relative; top: 2px; }
+  .opt:has(input:checked) {
+    background: var(--maroon-lo); border-left-color: var(--maroon);
+  }
+  .opt:has(input:focus-visible) { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .opt .num {
+    font-family: var(--mono); font-size: 14px; font-variant-numeric: tabular-nums;
+    flex: none; min-width: 4.6em;
+  }
+
+  /* ---------- footer note ---------- */
+  .caveat {
+    background: var(--blue-lo); border-left: 3px solid var(--blue);
+    padding: 18px 20px; margin: 40px 0 0; font-size: 14.5px;
+  }
+  .caveat h3 {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--blue); margin: 0 0 8px;
+  }
+  .caveat p { margin: 0 0 9px; }
+  .caveat p:last-child { margin-bottom: 0; }
+  .formula {
+    font-family: var(--mono); font-size: 13.5px; color: var(--ink);
+    background: var(--card); border: 1px solid var(--rule);
+    padding: 3px 7px; display: inline-block; white-space: nowrap;
+  }
+  .actions {
+    display: flex; gap: 12px; margin: 30px 0 0; flex-wrap: wrap;
+    align-items: center;
+  }
+  .progress {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  button[disabled] { opacity: 0.45; cursor: not-allowed; }
+  button[disabled]:hover { border-color: var(--rule); color: var(--ink); }
+  #show:not([disabled]) {
+    background: var(--blue); border-color: var(--blue); color: #fff;
+  }
+  #show:not([disabled]):hover { background: #001B47; color: #fff; }
+  .result {
+    background: var(--maroon-lo); border-left: 3px solid var(--maroon);
+    padding: 18px 20px; margin: 26px 0 0; font-size: 14.5px;
+  }
+  .result h3 {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--maroon); margin: 0 0 10px;
+  }
+  .res-a { display: flex; align-items: baseline; gap: 12px; }
+  .res-a b {
+    font-family: var(--display); font-size: 46px; font-weight: 600;
+    line-height: 1; color: var(--maroon);
+  }
+  .res-a span {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .result p { margin: 12px 0 0; }
+  .record {
+    margin: 14px 0 0; padding: 11px 13px; background: var(--card);
+    border: 1px solid var(--rule); font-family: var(--mono);
+    font-size: 13.5px; line-height: 1.7;
+  }
+  .record b { color: var(--maroon); }
+  button {
+    font-family: var(--ui); font-size: 14.5px; font-weight: 600;
+    padding: 10px 18px; border: 1px solid var(--rule);
+    background: var(--card); color: var(--ink); cursor: pointer;
+  }
+  button:hover { border-color: var(--blue); color: var(--blue); }
+  button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">AS.180.367 &middot; Investments and Portfolio Management</p>
+  <h1>What Is Your Risk Aversion?</h1>
+  <p class="standfirst">
+    Ten questions that estimate your coefficient of risk aversion,
+    <em>A</em> &mdash; the single number in
+    <span class="formula">U = E(r) &minus; &frac12;A&sigma;&sup2;</span>
+    that decides how much of your money belongs in risky assets.
+    Five of the questions pin <em>A</em> down exactly. Five are judgement.
+  </p>
+  <p class="nosubmit">
+    <strong>There is no submit button.</strong> Your <em>A</em> is worked out
+    as you answer, and shown on the scale just below &mdash; watch it move.
+    Once all ten are answered, <em>Show my result</em> at the foot of the page
+    gathers it up.
+  </p>
+</header>
+
+<div class="instrument">
+  <div class="inst-head">
+    <span class="inst-title">Your estimate</span>
+    <span class="readout" id="readout">answer the questions below &mdash; <b id="bigA">&mdash;</b></span>
+  </div>
+  <div class="ruler-scroll">
+    <svg class="ruler" id="ruler" viewBox="0 0 640 168" role="img"
+         aria-label="A scale of the risk-aversion coefficient A from 0.5 to 10, with the implied share of savings held in stocks beneath it."></svg>
+  </div>
+  <p class="hint" id="hint">The shaded band is the range most economists work in. The dashed
+     mark is the <em>A</em> implied by the standard 60/40 portfolio.</p>
+</div>
+
+<div class="bandhdr"><span>A</span><span>What it means</span><span>Stocks</span></div>
+<div class="bands" id="bands"></div>
+
+<h2>The questions</h2>
+<p class="sect-note">
+  There are no right answers. Answer as you would actually behave, not as
+  you think you should &mdash; the gap between those two is itself one of the
+  findings of this literature.
+</p>
+
+<form id="quiz"></form>
+
+<div class="actions">
+  <button type="button" id="show" disabled>Show my result</button>
+  <span class="progress" id="progress">0 of 10 answered</span>
+  <button type="button" id="clear">Clear answers</button>
+</div>
+
+<div class="result" id="result" hidden>
+  <h3>Your result</h3>
+  <div class="res-a"><b id="resA">&mdash;</b><span>your average A</span></div>
+  <p id="resText"></p>
+  <div class="record" id="record"></div>
+</div>
+
+<div class="caveat">
+  <h3>How to read this</h3>
+  <p><strong>The stock share comes from the same model.</strong> Optimal risky
+  weight is <span class="formula">w* = (E(r) &minus; r<sub>f</sub>) / (A&sigma;&sup2;)</span>.
+  Assuming an equity premium of 6% and &sigma; = 20%, that is
+  <span class="formula">w* = 1.5 / A</span>. So <em>A</em> = 2.5 says 60% stocks;
+  <em>A</em> = 5 says 30%.</p>
+  <p><strong>The spread across your ten answers matters as much as the average.</strong>
+  Almost nobody is consistent. If your answers imply anything from
+  <em>A</em> = 1 to <em>A</em> = 8, that is the normal result, and it is exactly
+  why calibrating <em>A</em> is contested rather than settled.</p>
+  <p><strong>What this does not capture:</strong> your horizon, your job security,
+  and your human capital. A tenured professor and a commission salesperson with
+  identical <em>A</em> should not hold identical portfolios, because their
+  non-traded income differs. The static model has no room for that.</p>
+</div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- questions -------------------------------------------------------
+  // "exact" questions invert the utility function; "judgement" ones use a
+  // documented convention. A values are the implied coefficient.
+  var Q = [
+    { t: "A one-year investment: an equal chance of +30% or −10%.",
+      s: "That is E(r) = 10% with σ = 20%. What guaranteed return would leave you exactly indifferent between the two?",
+      exact: true,
+      o: [["8%", 1], ["6%", 2], ["4%", 3], ["2%", 4], ["0%", 5], ["−4%", 7]] },
+
+    { t: "Same question, bigger stakes: an equal chance of +60% or −20%.",
+      s: "E(r) = 20%, σ = 40%. A consistent answer here is lower than above, because the risk is twice as large.",
+      exact: true,
+      o: [["12%", 1], ["8%", 1.5], ["4%", 2], ["0%", 2.5], ["−4%", 3], ["−12%", 4], ["−20%", 5]] },
+
+    { t: "A coin flip on all your savings. Heads, they rise 50%.",
+      s: "Tails, they fall. What is the largest fall you would accept for that 50% upside?",
+      exact: true,
+      o: [["−40%", 0.5], ["−30%", 1.25], ["−25%", 1.8], ["−20%", 2.45],
+          ["−15%", 3.3], ["−10%", 4.45], ["−5%", 5.95], ["No flip", 8]] },
+
+    { t: "Retirement savings you will not touch for twenty years.",
+      s: "What share sits in stocks, with the rest in cash?",
+      exact: true,
+      o: [["130%", 1.15], ["100%", 1.5], ["80%", 1.9], ["60%", 2.5],
+          ["40%", 3.75], ["20%", 7.5], ["0%", 10]] },
+
+    { t: "Pick one portfolio to hold for the next ten years.",
+      s: "Each pair is expected return and standard deviation. Your choice reveals a range for A.",
+      exact: true,
+      o: [["17% / 42%", 0.5], ["14% / 30%", 0.95], ["11% / 20%", 1.8],
+          ["8% / 12%", 3.7], ["5% / 5%", 7]] },
+
+    { t: "The market falls 20% in a month. What do you actually do?",
+      s: "",
+      exact: false,
+      o: [["Buy more", 1.3], ["Rebalance to target", 2], ["Nothing", 3],
+          ["Stop contributing", 4], ["Sell some", 5.5], ["Sell everything", 8]] },
+
+    { t: "Your $100,000 portfolio is falling. When do you abandon the plan?",
+      s: "",
+      exact: false,
+      o: [["Never", 1.5], ["$50,000", 2], ["$70,000", 3],
+          ["$80,000", 4], ["$90,000", 6], ["$95,000", 8.5]] },
+
+    { t: "Which would bother you more a year later?",
+      s: "Sitting out a 30% gain, or taking a 20% loss.",
+      exact: false,
+      o: [["Missed gain, far more", 1.3], ["Missed gain, somewhat", 2],
+          ["About equal", 3], ["The loss, somewhat", 4.5], ["The loss, far more", 7]] },
+
+    { t: "If these savings fell 30%, what would change in your life?",
+      s: "",
+      exact: false,
+      o: [["Nothing at all", 1.5], ["I'd notice, nothing changes", 2.3],
+          ["I'd cut back", 3.5], ["Plans would change", 5.5],
+          ["I could not absorb it", 8.5] ] },
+
+    { t: "After a 30% drop, how often would you check the balance?",
+      s: "",
+      exact: false,
+      o: [["No more than usual", 1.6], ["Monthly", 2.5], ["Weekly", 3.5],
+          ["Daily", 5], ["Several times a day", 7.5] ] }
+  ];
+
+  var BANDS = [
+    { lo: 0,   hi: 1.5, nm: "Very low",  a: "A < 1.5",
+      ds: "You would borrow to invest. Very few people are here once real money is involved." },
+    { lo: 1.5, hi: 2.5, nm: "Low",       a: "1.5 – 2.5",
+      ds: "Almost all in equities. Sustainable only if you genuinely do nothing in a crash." },
+    { lo: 2.5, hi: 4,   nm: "Moderate",  a: "2.5 – 4",
+      ds: "The range most economists assume, and where standard 60/40 advice sits." },
+    { lo: 4,   hi: 6,   nm: "High",      a: "4 – 6",
+      ds: "A cautious portfolio. You are paying real expected return for calm." },
+    { lo: 6,   hi: 99,  nm: "Very high", a: "A > 6",
+      ds: "Mostly cash and bonds. Worth asking whether it is risk you dislike, or unfamiliarity." }
+  ];
+
+  var WSTAR = 1.5;                        // premium 6% over sigma^2 = 0.04
+  var answers = new Array(Q.length).fill(null);
+
+  function wpct(A) { return Math.round(WSTAR / A * 100); }
+
+  // ---- build the bands table ------------------------------------------
+  var bandsEl = document.getElementById("bands");
+  BANDS.forEach(function (b, i) {
+    var lo = b.lo === 0 ? 1.2 : b.lo, hi = b.hi === 99 ? 9 : b.hi;
+    var w = b.hi === 99 ? "< " + wpct(6) + "%"
+          : b.lo === 0 ? "> " + wpct(1.5) + "%"
+          : wpct(hi) + "–" + wpct(lo) + "%";
+    var row = document.createElement("div");
+    row.className = "bandrow";
+    row.dataset.band = i;
+    row.innerHTML = '<span class="a">' + b.a + '</span>'
+      + '<span><span class="nm">' + b.nm + '</span><br>'
+      + '<span class="ds">' + b.ds + '</span></span>'
+      + '<span class="w">' + w + '</span>';
+    bandsEl.appendChild(row);
+  });
+
+  // ---- build the questions --------------------------------------------
+  var form = document.getElementById("quiz");
+  Q.forEach(function (q, qi) {
+    var fs = document.createElement("fieldset");
+    var lg = document.createElement("legend");
+    lg.innerHTML = '<span class="qtop"><span class="qn">' + (qi + 1)
+      + '</span><span class="qt">' + q.t + '</span>'
+      + '<span class="tag' + (q.exact ? " exact" : "") + '">'
+      + (q.exact ? "exact" : "judgement") + '</span></span>';
+    fs.appendChild(lg);
+    if (q.s) {
+      var sub = document.createElement("p");
+      sub.className = "qsub";
+      sub.textContent = q.s;
+      fs.appendChild(sub);
+    }
+    var opts = document.createElement("div");
+    opts.className = "opts";
+    q.o.forEach(function (pair, oi) {
+      var lab = document.createElement("label");
+      lab.className = "opt";
+      lab.innerHTML = '<input type="radio" name="q' + qi + '" value="' + pair[1]
+        + '"><span class="num">' + pair[0] + '</span>';
+      opts.appendChild(lab);
+      lab.querySelector("input").addEventListener("change", function () {
+        answers[qi] = pair[1];
+        update();
+      });
+    });
+    fs.appendChild(opts);
+    form.appendChild(fs);
+  });
+
+  // ---- the ruler -------------------------------------------------------
+  var A_MIN = 0.5, A_MAX = 10, X0 = 52, X1 = 596;
+  var TICKS = [0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+
+  function xOf(A) {
+    var t = (Math.log(A) - Math.log(A_MIN)) / (Math.log(A_MAX) - Math.log(A_MIN));
+    return X0 + Math.max(0, Math.min(1, t)) * (X1 - X0);
+  }
+
+  function drawRuler(A) {
+    var yA = 62, yW = 118, s = [];
+    // typical-range shading
+    s.push('<rect class="rl-typ" x="' + xOf(2.5).toFixed(1) + '" y="30" width="'
+      + (xOf(4) - xOf(2.5)).toFixed(1) + '" height="' + (yA - 30) + '"/>');
+    s.push('<text class="rl-lab" x="' + ((xOf(2.5) + xOf(4)) / 2).toFixed(1)
+      + '" y="24" text-anchor="middle">MOST ECONOMISTS</text>');
+    // 60/40 reference
+    s.push('<line class="rl-mark" x1="' + xOf(2.5).toFixed(1) + '" y1="30" x2="'
+      + xOf(2.5).toFixed(1) + '" y2="' + (yW + 8) + '"/>');
+    s.push('<text class="rl-lab" x="' + xOf(2.5).toFixed(1)
+      + '" y="' + (yW + 24) + '" text-anchor="middle">60/40</text>');
+    // axes
+    s.push('<line class="rl-axis" x1="' + X0 + '" y1="' + yA + '" x2="' + X1 + '" y2="' + yA + '"/>');
+    s.push('<line class="rl-axis" x1="' + X0 + '" y1="' + yW + '" x2="' + X1 + '" y2="' + yW + '"/>');
+    TICKS.forEach(function (t) {
+      var x = xOf(t).toFixed(1);
+      s.push('<line class="rl-tick" x1="' + x + '" y1="' + yA + '" x2="' + x + '" y2="' + (yA + 6) + '"/>');
+      s.push('<text class="rl-txt-b" x="' + x + '" y="' + (yA + 19) + '" text-anchor="middle">' + t + '</text>');
+      s.push('<line class="rl-tick" x1="' + x + '" y1="' + (yW - 6) + '" x2="' + x + '" y2="' + yW + '"/>');
+      s.push('<text class="rl-txt" x="' + x + '" y="' + (yW - 11) + '" text-anchor="middle">' + wpct(t) + '</text>');
+    });
+    s.push('<text class="rl-lab" x="' + (X0 - 8) + '" y="' + (yA + 4) + '" text-anchor="end">A</text>');
+    s.push('<text class="rl-lab" x="' + (X0 - 8) + '" y="' + (yW - 8) + '" text-anchor="end">STOCKS %</text>');
+    // the reading
+    if (A !== null) {
+      var x = xOf(A);
+      s.push('<line class="rl-youl" x1="' + x.toFixed(1) + '" y1="34" x2="'
+        + x.toFixed(1) + '" y2="' + yA + '"/>');
+      s.push('<polygon class="rl-you" points="' + (x - 6).toFixed(1) + ',30 '
+        + (x + 6).toFixed(1) + ',30 ' + x.toFixed(1) + ',40"/>');
+      var anc = x > X1 - 60 ? "end" : (x < X0 + 60 ? "start" : "middle");
+      s.push('<text class="rl-yout" x="' + x.toFixed(1)
+        + '" y="' + 16 + '" text-anchor="' + anc + '">you · A = '
+        + A.toFixed(1) + '</text>');
+    }
+    document.getElementById("ruler").innerHTML = s.join("");
+  }
+
+  // ---- the result panel ------------------------------------------------
+  // The readout at the top of the page is easy to miss: by the time you
+  // answer the tenth question it is well above the fold, so nothing tells
+  // you that you are finished. This panel sits under the last question,
+  // where you actually are, and hands you the two things Canvas asks for.
+  var showBtn = document.getElementById("show");
+  var resultEl = document.getElementById("result");
+
+  function fillResult(mean, lo, hi, band) {
+    document.getElementById("resA").textContent = mean.toFixed(1);
+    document.getElementById("resText").innerHTML =
+      "That is <strong>" + band.nm.toLowerCase() + "</strong> risk aversion "
+      + "&mdash; " + band.ds.charAt(0).toLowerCase() + band.ds.slice(1)
+      + " It points to about <strong>" + wpct(mean) + "% in stocks</strong>. "
+      + "Your ten answers ranged from A = " + lo.toFixed(1) + " to A = "
+      + hi.toFixed(1) + ", a spread of " + (hi - lo).toFixed(1)
+      + (hi - lo > 4 ? ", which is wide, and completely normal."
+                     : ", which is unusually consistent.");
+    document.getElementById("record").innerHTML =
+      "To record in Canvas:<br>band <b>" + band.nm + "</b>"
+      + " &nbsp;&middot;&nbsp; A = <b>" + mean.toFixed(1) + "</b>"
+      + " &nbsp;&middot;&nbsp; spread <b>" + lo.toFixed(1) + " to " + hi.toFixed(1)
+      + "</b>";
+  }
+
+  showBtn.addEventListener("click", function () {
+    resultEl.hidden = false;
+    resultEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  // ---- update ----------------------------------------------------------
+  function update() {
+    var got = answers.filter(function (a) { return a !== null; });
+    var n = got.length;
+    var big = document.getElementById("bigA");
+    var ro = document.getElementById("readout");
+    var hint = document.getElementById("hint");
+
+    document.getElementById("progress").textContent =
+      n + " of " + Q.length + " answered";
+    showBtn.disabled = n < Q.length;
+    if (n < Q.length) { resultEl.hidden = true; }
+
+    if (n === 0) {
+      drawRuler(null);
+      big.textContent = "—";
+      ro.innerHTML = 'answer the questions below — <b id="bigA">—</b>';
+      hint.innerHTML = "The shaded band is the range most economists work in. "
+        + "The dashed mark is the <em>A</em> implied by the standard 60/40 portfolio.";
+      Array.prototype.forEach.call(bandsEl.children, function (r) {
+        r.classList.remove("on");
+      });
+      return;
+    }
+
+    var mean = got.reduce(function (a, b) { return a + b; }, 0) / n;
+    var lo = Math.min.apply(null, got), hi = Math.max.apply(null, got);
+    drawRuler(mean);
+
+    ro.innerHTML = 'A = <b>' + mean.toFixed(1) + '</b>';
+    var band = BANDS.filter(function (b) { return mean >= b.lo && mean < b.hi; })[0];
+    Array.prototype.forEach.call(bandsEl.children, function (r, i) {
+      r.classList.toggle("on", BANDS[i] === band);
+    });
+
+    var txt = "<strong>" + n + " of " + Q.length + " answered.</strong> ";
+    if (n < Q.length) {
+      txt += "Running average " + mean.toFixed(1) + ".";
+    } else {
+      txt += "That puts you in the <strong>" + band.nm.toLowerCase()
+        + "</strong> band, implying about <strong>" + wpct(mean)
+        + "% in stocks</strong>. Your answers ranged from A = " + lo.toFixed(1)
+        + " to A = " + hi.toFixed(1) + " — a spread of "
+        + (hi - lo).toFixed(1)
+        + (hi - lo > 4 ? ", which is wide, and completely normal."
+                       : ", which is unusually consistent.");
+      fillResult(mean, lo, hi, band);
+    }
+    hint.innerHTML = txt;
+  }
+
+  document.getElementById("clear").addEventListener("click", function () {
+    resultEl.hidden = true;
+    answers = new Array(Q.length).fill(null);
+    Array.prototype.forEach.call(form.querySelectorAll("input"), function (i) {
+      i.checked = false;
+    });
+    update();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  update();
+})();
+</script>
+
+</body>
+</html>
